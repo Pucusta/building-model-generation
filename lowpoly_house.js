@@ -1,4 +1,8 @@
 import { mat4, glMatrix } from './node_modules/gl-matrix/esm/index.js';
+import vertexShaderSource from './shaders/vertex.glsl'
+import fragmentShaderSource from './shaders/fragment.glsl'
+
+glMatrix.setMatrixArrayType(Array);
 
 let canvas = null; // we'll keep it as a global object
 let gl = null; // it will store our context, and all the functions and constants that are needed to use it
@@ -87,65 +91,54 @@ function initWebGL2() {
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    // Load the GLSL files using the fetch API
-    fetch('shaders/vertex.glsl')
-        .then(response => response.text())
-        .then(vertexShaderSource => {
-            fetch('shaders/fragment.glsl')
-                .then(response => response.text())
-                .then(fragmentShaderSource => {
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
+    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+        console.error(`Error compiling vertex shader: ${gl.getShaderInfoLog(vertexShader)}`);
+        return;
+    }
 
-                    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-                    gl.shaderSource(vertexShader, vertexShaderSource);
-                    gl.compileShader(vertexShader);
-                    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-                        console.error(`Error compiling vertex shader: ${gl.getShaderInfoLog(vertexShader)}`);
-                        return;
-                    }
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, fragmentShaderSource);
+    gl.compileShader(fragmentShader);
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+        console.error(`Error compiling fragment shader: ${gl.getShaderInfoLog(fragmentShader)}`);
+        return;
+    }
 
-                    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-                    gl.shaderSource(fragmentShader, fragmentShaderSource);
-                    gl.compileShader(fragmentShader);
-                    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-                        console.error(`Error compiling fragment shader: ${gl.getShaderInfoLog(fragmentShader)}`);
-                        return;
-                    }
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
 
-                    const shaderProgram = gl.createProgram();
-                    gl.attachShader(shaderProgram, vertexShader);
-                    gl.attachShader(shaderProgram, fragmentShader);
-                    gl.linkProgram(shaderProgram);
-                    gl.useProgram(shaderProgram);
+    gl.enable(gl.DEPTH_TEST);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set the clear color to black
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color and depth buffers
 
-                    gl.enable(gl.DEPTH_TEST);
-                    gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set the clear color to black
-                    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color and depth buffers
+    const vertexAttributeLocation = gl.getAttribLocation(
+        shaderProgram,
+        "aVertexPosition"
+    );
+    gl.enableVertexAttribArray(vertexAttributeLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.vertexAttribPointer(vertexAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
-                    const vertexAttributeLocation = gl.getAttribLocation(
-                        shaderProgram,
-                        "aVertexPosition"
-                    );
-                    gl.enableVertexAttribArray(vertexAttributeLocation);
-                    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-                    gl.vertexAttribPointer(vertexAttributeLocation, 3, gl.FLOAT, false, 0, 0);
+    const modelViewUniformLocation = gl.getUniformLocation(
+        shaderProgram,
+        "uModelViewMatrix"
+    );
+    gl.uniformMatrix4fv(modelViewUniformLocation, false, modelViewMatrix);
 
-                    const modelViewUniformLocation = gl.getUniformLocation(
-                        shaderProgram,
-                        "uModelViewMatrix"
-                    );
-                    gl.uniformMatrix4fv(modelViewUniformLocation, false, modelViewMatrix);
+    const projectionUniformLocation = gl.getUniformLocation(
+        shaderProgram,
+        "uProjectionMatrix"
+    );
+    gl.uniformMatrix4fv(projectionUniformLocation, false, projectionMatrix);
 
-                    const projectionUniformLocation = gl.getUniformLocation(
-                        shaderProgram,
-                        "uProjectionMatrix"
-                    );
-                    gl.uniformMatrix4fv(projectionUniformLocation, false, projectionMatrix);
-
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-                    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-
-                });
-        });
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 }
 
 initWebGL2(); // we call our init function, therefore initializing the application

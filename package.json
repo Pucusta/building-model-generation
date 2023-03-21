@@ -2,7 +2,7 @@
   "name": "house-model-generation",
   "version": "1.0.0",
   "description": "Generating different LODs for lowpoly house models",
-  "main": "index.js",
+  "main": "lowpoly_house.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Pucusta/house-model-generation/issues"
   },
-  "homepage": "https://github.com/Pucusta/house-model-generation#readme"
+  "homepage": "https://github.com/Pucusta/house-model-generation#readme",
+  "type": "module",
+  "dependencies": {
+    "gl-matrix": "^3.4.3"
+  }
 }

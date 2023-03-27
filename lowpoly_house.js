@@ -17,8 +17,16 @@ window.onresize = onResize; // sets the window's resize function to be the exact
 function calculateNormal(vertex1, vertex2, vertex3) {
     const vector1 = vec3.subtract(vec3.create(), vertex2, vertex1);
     const vector2 = vec3.subtract(vec3.create(), vertex3, vertex1);
-    const normal = vec3.cross(vec3.create(), vector1, vector2);
+    const normal = vec3.cross(vec3.create(), vector1, vector2);    
     vec3.normalize(normal, normal);
+
+    //opposite sides have the same normal, so we need to inverse the wrong ones
+    const mid = vec3.add(vec3.create(), vec3.add(vec3.create(), vertex1, vertex2), vertex3);
+    const dotProduct = vec3.dot(normal, mid);
+    if (dotProduct < 0) {
+        vec3.scale(normal, normal, -1);
+    }
+
     return normal;
 }
 
@@ -39,14 +47,14 @@ function initWebGL2() {
 
     // Define the vertices of the cube
     const vertices = [
-        -0.5, -0.5, 0.5,
-        0.5, -0.5, 0.5,
-        0.5, 0.5, 0.5,
-        -0.5, 0.5, 0.5,
-        -0.5, -0.5, -0.5,
-        0.5, -0.5, -0.5,
-        0.5, 0.5, -0.5,
-        -0.5, 0.5, -0.5,
+        -1, -1, 1,
+        1, -1, 1,
+        1, 1, 1,
+        -1, 1, 1,
+        -1, -1, -1,
+        1, -1, -1,
+        1, 1, -1,
+        -1, 1, -1,
     ];
 
     // Define the indices of the cube
@@ -88,6 +96,7 @@ function initWebGL2() {
         vertexData.push(vertex3[0], vertex3[1], vertex3[2], normal[0], normal[1], normal[2]);
     }
 
+    
     /*
     const vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -189,7 +198,7 @@ function initWebGL2() {
     const rotationAngle = 0;
     const rotationMatrix = mat4.create();
     mat4.fromRotation(rotationMatrix, rotationAngle, rotationAxis);
-    
+
 
 
     const modelViewUniformLocation = gl.getUniformLocation(
@@ -216,7 +225,7 @@ function initWebGL2() {
         shaderProgram,
         "uRotationMatrix"
     );
-    
+
     const draw = () => {
         mat4.rotateY(rotationMatrix, rotationMatrix, glMatrix.toRadian(0.1));
         gl.uniformMatrix4fv(rotationUniformLocation, false, rotationMatrix);

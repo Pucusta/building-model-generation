@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "module": "es6",
+        "esModuleInterop": true,
+        "target": "es6",
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "sourceMap": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "jsx": "react",
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "outDir": "./dist/",
+        "noImplicitAny": true,
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

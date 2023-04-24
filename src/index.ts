@@ -1,6 +1,8 @@
 import { vec3, mat4, glMatrix } from "gl-matrix";
 import vertexShaderSource from "./shaders/vertex.glsl";
 import fragmentShaderSource from "./shaders/fragment.glsl";
+import { House } from "./House";
+import { Vec3 } from "./MathLib";
 
 glMatrix.setMatrixArrayType(Array);
 
@@ -14,26 +16,6 @@ function onResize() {
 }
 
 window.onresize = onResize; // sets the window's resize function to be the exact function we use for resizing our canvas
-
-function calculateNormal(vertex1: vec3, vertex2: vec3, vertex3: vec3) {
-  const vector1 = vec3.subtract(vec3.create(), vertex2, vertex1);
-  const vector2 = vec3.subtract(vec3.create(), vertex3, vertex1);
-  const normal = vec3.cross(vec3.create(), vector1, vector2);
-  vec3.normalize(normal, normal);
-
-  //opposite sides have the same normal, so we need to inverse the wrong ones
-  const mid = vec3.add(
-    vec3.create(),
-    vec3.add(vec3.create(), vertex1, vertex2),
-    vertex3
-  );
-  const dotProduct = vec3.dot(normal, mid);
-  if (dotProduct < 0) {
-    vec3.scale(normal, normal, -1);
-  }
-
-  return normal;
-}
 
 function initWebGL2() {
   if (gl) {
@@ -60,72 +42,18 @@ function initWebGL2() {
   document.body.appendChild(canvas); // appends/adds the canvas element to the document's body
   onResize(); // resizes the canvas (it needs to be done, because otherwise it will not resize until you resize your window)
 
-  // Define the vertices of the cube
-  const vertices = [
-    -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, 1, -1, -1,
-    1, -1,
-  ];
-
-  // Define the indices of the cube
-  const indices = [
-    // Front face
-    0, 1, 2, 2, 3, 0,
-    // Back face
-    4, 5, 6, 6, 7, 4,
-    // Top face
-    3, 2, 6, 6, 7, 3,
-    // Bottom face
-    0, 1, 5, 5, 4, 0,
-    // Right face
-    1, 2, 6, 6, 5, 1,
-    // Left face
-    0, 3, 7, 7, 4, 0,
-  ];
-
+  const corners: Vec3[] = [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]];
+  const house = new House(corners);
+  const positions = house.vertices;
+  const normals = house.normals;
   const vertexData = [];
-  for (let i = 0; i < indices.length; i += 3) {
-    const index1 = indices[i];
-    const index2 = indices[i + 1];
-    const index3 = indices[i + 2];
-
-    const vertex1 = vec3.fromValues(
-      vertices[index1 * 3],
-      vertices[index1 * 3 + 1],
-      vertices[index1 * 3 + 2]
-    );
-    const vertex2 = vec3.fromValues(
-      vertices[index2 * 3],
-      vertices[index2 * 3 + 1],
-      vertices[index2 * 3 + 2]
-    );
-    const vertex3 = vec3.fromValues(
-      vertices[index3 * 3],
-      vertices[index3 * 3 + 1],
-      vertices[index3 * 3 + 2]
-    );
-
-    const normal = calculateNormal(vertex1, vertex2, vertex3);
-
+  for (let i = 0; i < positions.length; i++) {
+    const position = positions[i];
+    const normal = normals[i];
     vertexData.push(
-      vertex1[0],
-      vertex1[1],
-      vertex1[2],
-      normal[0],
-      normal[1],
-      normal[2]
-    );
-    vertexData.push(
-      vertex2[0],
-      vertex2[1],
-      vertex2[2],
-      normal[0],
-      normal[1],
-      normal[2]
-    );
-    vertexData.push(
-      vertex3[0],
-      vertex3[1],
-      vertex3[2],
+      position[0],
+      position[1],
+      position[2],
       normal[0],
       normal[1],
       normal[2]
@@ -159,7 +87,7 @@ function initWebGL2() {
         new Float32Array(vertices),
         gl.STATIC_DRAW
     );
-    */
+  */
 
   /*
     const indexBuffer = gl.createBuffer();
@@ -169,7 +97,7 @@ function initWebGL2() {
         new Uint16Array(indices),
         gl.STATIC_DRAW
     );
-    */
+  */
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 

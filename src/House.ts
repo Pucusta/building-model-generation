@@ -10,10 +10,12 @@ export class House {
 
     wallHeight = 1.5;
     roofHeight = 1;
+    eavesWidth = 0.2;
 
     constructor(corners: Vec3[]) {
         this.corners = corners;
         this.BuildHouse();
+        console.log("num of vertices: " + this.vertices.length);
     }
 
     private BuildCube() {
@@ -55,11 +57,20 @@ export class House {
     private BuildHouse() {
         const bottomCorners = this.corners;
         const topCorners: Vec3[] = bottomCorners.map(v => [v[0], v[1] + this.wallHeight, v[2]]);
-        let rooftop: Vec3 = [0, 0, 0];
+
+        let topMiddle: Vec3 = [0, 0, 0];
         for (let i = 0; i < 4; i++) {
-            rooftop = ML.add3(rooftop, topCorners[i]);
+            topMiddle = ML.add3(topMiddle, topCorners[i]);
         }
-        rooftop = [rooftop[0] / 4, rooftop[1] / 4 + this.roofHeight, rooftop[2] / 4];
+        topMiddle = [topMiddle[0] / 4, topMiddle[1] / 4, topMiddle[2] / 4];
+        let rooftop: Vec3 = [topMiddle[0], topMiddle[1] + this.roofHeight, topMiddle[2]];
+
+        const eavesCorners: Vec3[] = []; 
+        for (let i = 0; i < 4; i++) {
+            let offset: Vec3 = ML.normalize3(ML.sub3(topCorners[i], topMiddle));
+            offset = [offset[0] * this.eavesWidth, offset[1], offset[2] * this.eavesWidth]
+            eavesCorners.push(ML.add3(topCorners[i], offset));
+        }
 
         //sides
         for (let i = 0; i < 4; i++) {
@@ -81,10 +92,19 @@ export class House {
         this.vertices.push(bottomCorners[3]);
         this.vertices.push(bottomCorners[0]);
 
+        //eaves (whole area under roof)
+        this.vertices.push(eavesCorners[0]);
+        this.vertices.push(eavesCorners[1]);
+        this.vertices.push(eavesCorners[2]);
+
+        this.vertices.push(eavesCorners[2]);
+        this.vertices.push(eavesCorners[3]);
+        this.vertices.push(eavesCorners[0]);
+
         //roof
         for (let i = 0; i < 4; i++) {
-            this.vertices.push(topCorners[i % 4]);
-            this.vertices.push(topCorners[(i + 1) % 4]);
+            this.vertices.push(eavesCorners[i % 4]);
+            this.vertices.push(eavesCorners[(i + 1) % 4]);
             this.vertices.push(rooftop);
         }
 

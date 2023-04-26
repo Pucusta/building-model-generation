@@ -83,6 +83,7 @@ export class House {
             this.vertices.push(bottomCorners[i % 4]);
         }
 
+        /*
         //bottom
         this.vertices.push(bottomCorners[0]);
         this.vertices.push(bottomCorners[1]);
@@ -100,6 +101,7 @@ export class House {
         this.vertices.push(eavesCorners[2]);
         this.vertices.push(eavesCorners[3]);
         this.vertices.push(eavesCorners[0]);
+        */
 
         //roof
         for (let i = 0; i < 4; i++) {

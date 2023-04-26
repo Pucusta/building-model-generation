@@ -35,6 +35,11 @@ export class ML
         return [ v1[ 0 ] - v2[ 0 ], v1[ 1 ] - v2[ 1 ], v1[ 2 ] - v2[ 2 ] ];
     }
 
+    static add3( a: Vec3, b: Vec3 ): Vec3
+    {
+        return [ a[ 0 ] + b[ 0 ], a[ 1 ] + b[ 1 ], a[ 2 ] + b[ 2 ] ];
+    }
+
     static transform4x4( m: Mat4, v: Vec4 ): Vec4
     {
         const iw = 1 / ( m[ 3 ] * v[ 0 ] + m[ 7 ] * v[ 1 ] + m[ 11 ] * v[ 2 ] + m[ 15 ] * v[ 3 ] );
@@ -295,15 +300,9 @@ export class ML
         return [ a[ 0 ], a[ 1 ], a[ 2 ], a[ 4 ], a[ 5 ], a[ 6 ], a[ 8 ], a[ 9 ], a[ 10 ] ];
     }
 
-
     static createIdentity3x3()
     {
         return [ 1, 0, 0, 0, 1, 0, 0, 0, 1 ];
-    }
-
-    static add3( a: Vec3, b: Vec3 ): Vec3
-    {
-        return [ a[ 0 ] + b[ 0 ], a[ 1 ] + b[ 1 ], a[ 2 ] + b[ 2 ] ];
     }
 
     static transform3x3( m: Mat3, v: Vec3 ): Vec3

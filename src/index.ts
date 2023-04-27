@@ -44,21 +44,8 @@ function initWebGL2() {
 
   const corners: Vec3[] = [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]];
   const house = new House(corners);
-  const positions = house.vertices;
-  const normals = house.normals;
-  const vertexData = [];
-  for (let i = 0; i < positions.length; i++) {
-    const position = positions[i];
-    const normal = normals[i];
-    vertexData.push(
-      position[0],
-      position[1],
-      position[2],
-      normal[0],
-      normal[1],
-      normal[2]
-    );
-  }
+  const vertexData = house.GetVertexData();
+  const indices = house.indices;
 
   const modelViewMatrix = mat4.create();
   mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -10.0]);
@@ -78,26 +65,6 @@ function initWebGL2() {
   const rotationAngle = 0;
   const rotationMatrix = mat4.create();
   mat4.fromRotation(rotationMatrix, rotationAngle, rotationAxis);
-
-  /*
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(
-        gl.ARRAY_BUFFER,
-        new Float32Array(vertices),
-        gl.STATIC_DRAW
-    );
-  */
-
-  /*
-    const indexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        new Uint16Array(indices),
-        gl.STATIC_DRAW
-    );
-  */
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -176,6 +143,14 @@ function initWebGL2() {
       3 * Float32Array.BYTES_PER_ELEMENT
     );
 
+    const indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(
+      gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indices),
+      gl.STATIC_DRAW
+    );
+
     const modelViewUniformLocation = gl.getUniformLocation(
       shaderProgram,
       "uModelViewMatrix"
@@ -207,8 +182,8 @@ function initWebGL2() {
 
       gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set the clear color to black
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color and depth buffers
-      //gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-      gl.drawArrays(gl.TRIANGLES, 0, vertexData.length / 6);
+      gl.drawElements(gl.TRIANGLES, house.indices.length, gl.UNSIGNED_SHORT, 0);
+      //gl.drawArrays(gl.TRIANGLES, 0, vertexData.length / 6);
 
       requestAnimationFrame(draw);
     };

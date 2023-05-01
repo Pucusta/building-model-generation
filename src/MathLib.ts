@@ -14,6 +14,14 @@ export class ML
         return this.dot3( this.sub3( planePoint, linePoint ), planeN ) / this.dot3( planeN, lineDir );
     }
 
+    static projection3( v1: Vec3, v2: Vec3 ): Vec3 {
+        return [
+            (v2[0] * v1[0] + v2[1] * v1[1] + v2[2] * v1[2]) / (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * v1[0],
+            (v2[0] * v1[0] + v2[1] * v1[1] + v2[2] * v1[2]) / (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * v1[1],
+            (v2[0] * v1[0] + v2[1] * v1[1] + v2[2] * v1[2]) / (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * v1[2],
+          ];
+    }
+
     static dot3( v1: Vec3, v2: Vec3 ): number
     {
         return v1[ 0 ] * v2[ 0 ] + v1[ 1 ] * v2[ 1 ] + v1[ 2 ] * v2[ 2 ];
@@ -55,6 +63,11 @@ export class ML
     {
         let ilen = 1 / Math.sqrt( v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ] );
         return [ v[ 0 ] * ilen, v[ 1 ] * ilen, v[ 2 ] * ilen ];
+    }
+
+    static getLength3(v: Vec3): number
+    {
+        return Math.sqrt(v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ]);
     }
 
     static setLength3( v: Vec3, length: number ): Vec3

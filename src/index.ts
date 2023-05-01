@@ -46,6 +46,7 @@ function initWebGL2() {
   const house = new House(corners);
   const vertexData = house.GetVertexData();
   const indices = house.indices;
+  console.log("num of vertices: " + house.vertices.length);
 
   const modelViewMatrix = mat4.create();
   mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -10.0]);
@@ -58,7 +59,7 @@ function initWebGL2() {
     glMatrix.toRadian(45),
     canvas.width / canvas.height,
     0.1,
-    100.0
+    200.0
   );
 
   const rotationAxis: vec3 = [0, 1, 0]; // rotate around the y-axis
@@ -114,9 +115,14 @@ function initWebGL2() {
       shaderProgram,
       "aVertexNormal"
     );
+    const vertexColorAttributeLocation = gl.getAttribLocation(
+      shaderProgram,
+      "aVertexColor"
+    );
 
     gl.enableVertexAttribArray(vertexPositionAttributeLocation);
     gl.enableVertexAttribArray(vertexNormalAttributeLocation);
+    gl.enableVertexAttribArray(vertexColorAttributeLocation);
 
     const vertexDataBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexDataBuffer);
@@ -131,7 +137,7 @@ function initWebGL2() {
       3,
       gl.FLOAT,
       false,
-      6 * Float32Array.BYTES_PER_ELEMENT,
+      10 * Float32Array.BYTES_PER_ELEMENT,
       0
     );
     gl.vertexAttribPointer(
@@ -139,8 +145,16 @@ function initWebGL2() {
       3,
       gl.FLOAT,
       false,
-      6 * Float32Array.BYTES_PER_ELEMENT,
+      10 * Float32Array.BYTES_PER_ELEMENT,
       3 * Float32Array.BYTES_PER_ELEMENT
+    );
+    gl.vertexAttribPointer(
+      vertexColorAttributeLocation,
+      4,
+      gl.FLOAT,
+      false,
+      10 * Float32Array.BYTES_PER_ELEMENT,
+      6 * Float32Array.BYTES_PER_ELEMENT
     );
 
     const indexBuffer = gl.createBuffer();

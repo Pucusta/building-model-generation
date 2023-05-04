@@ -45,6 +45,39 @@ export abstract class Mesh {
         this.indices.push(i3);
     }
 
+    protected BuildRectangleWithCutOutRectangle(rectPositions: Vec3[], cutoutRectPositions: Vec3[], normal: Vec3, color: Vec4) {
+        const v1 = new Vertex(rectPositions[0], normal, color);
+        const v2 = new Vertex(rectPositions[1], normal, color);
+        const v3 = new Vertex(rectPositions[2], normal, color);
+        const v4 = new Vertex(rectPositions[3], normal, color);
+        const v5 = new Vertex(cutoutRectPositions[0], normal, color);
+        const v6 = new Vertex(cutoutRectPositions[1], normal, color);
+        const v7 = new Vertex(cutoutRectPositions[2], normal, color);
+        const v8 = new Vertex(cutoutRectPositions[3], normal, color);
+
+        const rectIndices: number[] = [];
+        const cutoutIndices: number[] = [];
+
+        rectIndices.push(this.vertices.push(v1) - 1);
+        rectIndices.push(this.vertices.push(v2) - 1);
+        rectIndices.push(this.vertices.push(v3) - 1);
+        rectIndices.push(this.vertices.push(v4) - 1);
+        cutoutIndices.push(this.vertices.push(v5) - 1);
+        cutoutIndices.push(this.vertices.push(v6) - 1);
+        cutoutIndices.push(this.vertices.push(v7) - 1);
+        cutoutIndices.push(this.vertices.push(v8) - 1);
+
+        for (let i = 0; i < 4; i++) {
+            this.indices.push(rectIndices[i % 4]);
+            this.indices.push(rectIndices[(i + 1) % 4]);
+            this.indices.push(cutoutIndices[i % 4]);
+
+            this.indices.push(cutoutIndices[i % 4]);
+            this.indices.push(cutoutIndices[(i + 1) % 4]);
+            this.indices.push(rectIndices[(i + 1) % 4]);
+        }
+    }
+
     /*
     protected CalculateNormals() {
         for (let i = 0; i < this.indices.length - 2; i += 3) {

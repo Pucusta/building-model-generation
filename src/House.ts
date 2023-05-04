@@ -9,6 +9,8 @@ export class House extends Mesh {
     static doorColor: Vec4 = [0.44, 0.29, 0.14, 1.0];
     static windowColor: Vec4 = [0.3, 0.4, 0.8, 1.0];
 
+    objMiddle: Vec3 = [0, 0, 0];
+
     constructor(positions: Vec3[]) {
         super(positions);
     }
@@ -16,7 +18,7 @@ export class House extends Mesh {
     protected Build(positions: Vec3[]) {
         const bottomCorners = positions;
         const topCorners: Vec3[] = bottomCorners.map(v => [v[0], v[1] + Parameters.wallHeight, v[2]]);
-        const objMiddle = this.GetMiddlePoint(bottomCorners.concat(topCorners));
+        this.objMiddle = this.GetMiddlePoint(bottomCorners.concat(topCorners));
 
         let bottomMiddle: Vec3 = [0, 0, 0];
         for (let i = 0; i < bottomCorners.length; i++) {
@@ -48,7 +50,7 @@ export class House extends Mesh {
             positions.push(topCorners[(i + 1) % 4]);
             positions.push(topCorners[i % 4]);
 
-            const normal = this.CalculateNormal(positions[0], positions[1], positions[2], objMiddle);
+            const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
 
             if (i == 1) {
                 this.BuildWallWithDoor(positions, normal);
@@ -67,7 +69,7 @@ export class House extends Mesh {
             positions.push(eavesCorners[(i + 1) % 4]);
             positions.push(rooftop);
 
-            const normal = this.CalculateNormal(positions[0], positions[1], positions[2], objMiddle);
+            const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
 
             this.BuildTriangle(positions, normal, House.roofColor);
         }
@@ -75,67 +77,54 @@ export class House extends Mesh {
 
     private BuildWallWithDoor(positions: Vec3[], wallNormal: Vec3) {
 
-        const doorPositions: Vec3[] = [];
+        const doorOutsidePositions: Vec3[] = [];
 
         const wallWidth = ML.getLength3(ML.sub3(positions[0], positions[1]));
         if (wallWidth > Parameters.doorWidth + Parameters.doorOffset && Parameters.wallHeight > Parameters.doorHeight) {
 
             let offsetDirection = ML.setLength3(ML.sub3(positions[1], positions[0]), Parameters.doorOffset);
-            doorPositions.push(ML.add3(positions[0], offsetDirection));
+            doorOutsidePositions.push(ML.add3(positions[0], offsetDirection));
 
             let widthDirection = ML.setLength3(offsetDirection, Parameters.doorWidth);
-            doorPositions.push(ML.add3(doorPositions[0], widthDirection));
+            doorOutsidePositions.push(ML.add3(doorOutsidePositions[0], widthDirection));
 
             let heightDirection = ML.setLength3(ML.sub3(positions[2], positions[1]), Parameters.doorHeight);
-            doorPositions.push(ML.add3(doorPositions[1], heightDirection));
+            doorOutsidePositions.push(ML.add3(doorOutsidePositions[1], heightDirection));
 
             widthDirection = ML.negate3(widthDirection);
-            doorPositions.push(ML.add3(doorPositions[2], widthDirection));
+            doorOutsidePositions.push(ML.add3(doorOutsidePositions[2], widthDirection));
 
             let depthDirection = ML.setLength3(ML.negate3(wallNormal), Parameters.doorDepth);
+            const doorInsidePositions: Vec3[] = [];
             for (let i = 0; i < 4; i++) {
-                doorPositions.push(ML.add3(doorPositions[i], depthDirection));
+                doorInsidePositions.push(ML.add3(doorOutsidePositions[i], depthDirection));
             }
 
-            let leftProj = ML.projection3(ML.sub3(positions[3], positions[0]), ML.sub3(doorPositions[3], positions[0]));
-            let leftProjPoint = ML.add3(positions[0], leftProj);
-            let rightProj = ML.projection3(ML.sub3(positions[2], positions[1]), ML.sub3(doorPositions[2], positions[1]));
-            let rightProjPoint = ML.add3(positions[1], rightProj);
-
-            const doorMiddle = this.GetMiddlePoint(doorPositions);
+            const doorMiddle = this.GetMiddlePoint(doorOutsidePositions);
 
             //wall outside
-            let rectPositions = [positions[0], doorPositions[0], doorPositions[3], leftProjPoint];
-            let normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
-
-            rectPositions = [doorPositions[1], positions[1], rightProjPoint, doorPositions[2]];
-            normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
-
-            rectPositions = [leftProjPoint, rightProjPoint, positions[2], positions[3]];
-            normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
+            let normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
+            this.BuildRectangleWithCutOutRectangle(positions, doorOutsidePositions, normal, House.wallColor);
 
             //wall inside
-            rectPositions = [doorPositions[0], doorPositions[1], doorPositions[5], doorPositions[4]];
+            let rectPositions = [doorOutsidePositions[0], doorOutsidePositions[1], doorInsidePositions[1], doorInsidePositions[0]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
 
-            rectPositions = [doorPositions[1], doorPositions[5], doorPositions[6], doorPositions[2]];
+            rectPositions = [doorOutsidePositions[1], doorInsidePositions[1], doorInsidePositions[2], doorOutsidePositions[2]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
             
-            rectPositions = [doorPositions[3], doorPositions[2], doorPositions[6], doorPositions[7]];
+            rectPositions = [doorOutsidePositions[3], doorOutsidePositions[2], doorInsidePositions[2], doorInsidePositions[3]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
 
-            rectPositions = [doorPositions[0], doorPositions[4], doorPositions[7], doorPositions[3]];
+            rectPositions = [doorOutsidePositions[0], doorInsidePositions[0], doorInsidePositions[3], doorOutsidePositions[3]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
 
             //door
-            rectPositions = [doorPositions[4], doorPositions[5], doorPositions[6], doorPositions[7]];
+            rectPositions = [doorInsidePositions[0], doorInsidePositions[1], doorInsidePositions[2], doorInsidePositions[3]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], doorMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.doorColor);
         }
@@ -143,7 +132,7 @@ export class House extends Mesh {
 
     private BuildWallWithWindow(positions: Vec3[], wallNormal: Vec3) {
 
-        const windowPositions: Vec3[] = [];
+        const windowOutsidePositions: Vec3[] = [];
 
         const wallWidth = ML.getLength3(ML.sub3(positions[0], positions[1]));
         if (wallWidth > Parameters.windowWidth + Parameters.windowSideOffset && Parameters.wallHeight > Parameters.windowHeight + Parameters.windowBottomOffset) {
@@ -151,69 +140,48 @@ export class House extends Mesh {
             let sideOffsetDirection = ML.setLength3(ML.sub3(positions[1], positions[0]), Parameters.windowSideOffset);
             let bottomOffsetDirection = ML.setLength3(ML.sub3(positions[3], positions[0]), Parameters.windowBottomOffset);
             let offsetDirection = ML.add3(sideOffsetDirection, bottomOffsetDirection);
-            windowPositions.push(ML.add3(positions[0], offsetDirection));
+            windowOutsidePositions.push(ML.add3(positions[0], offsetDirection));
 
             let widthDirection = ML.setLength3(ML.sub3(positions[1], positions[0]), Parameters.windowWidth);
-            windowPositions.push(ML.add3(windowPositions[0], widthDirection));
+            windowOutsidePositions.push(ML.add3(windowOutsidePositions[0], widthDirection));
 
             let heightDirection = ML.setLength3(ML.sub3(positions[2], positions[1]), Parameters.windowHeight);
-            windowPositions.push(ML.add3(windowPositions[1], heightDirection));
+            windowOutsidePositions.push(ML.add3(windowOutsidePositions[1], heightDirection));
 
             widthDirection = ML.negate3(widthDirection);
-            windowPositions.push(ML.add3(windowPositions[2], widthDirection));
+            windowOutsidePositions.push(ML.add3(windowOutsidePositions[2], widthDirection));
 
             let depthDirection = ML.setLength3(ML.negate3(wallNormal), Parameters.windowDepth);
+            const windowsInsidePositions: Vec3[] = [];
             for (let i = 0; i < 4; i++) {
-                windowPositions.push(ML.add3(windowPositions[i], depthDirection));
+                windowsInsidePositions.push(ML.add3(windowOutsidePositions[i], depthDirection));
             }
 
-            let leftTopProj = ML.projection3(ML.sub3(positions[3], positions[0]), ML.sub3(windowPositions[3], positions[0]));
-            let leftTopProjPoint = ML.add3(positions[0], leftTopProj);
-            let leftBottomProj = ML.projection3(ML.sub3(positions[3], positions[0]), ML.sub3(windowPositions[0], positions[0]));
-            let leftBottomProjPoint = ML.add3(positions[0], leftBottomProj);
-            let rightTopProj = ML.projection3(ML.sub3(positions[2], positions[1]), ML.sub3(windowPositions[2], positions[1]));
-            let rightTopProjPoint = ML.add3(positions[1], rightTopProj);
-            let rightBottomProj = ML.projection3(ML.sub3(positions[2], positions[1]), ML.sub3(windowPositions[1], positions[1]));
-            let rightBottomProjPoint = ML.add3(positions[1], rightBottomProj);
-
-            const windowMiddle = this.GetMiddlePoint(windowPositions);
-
             //wall outside
-            let rectPositions = [positions[0], positions[1], rightBottomProjPoint, leftBottomProjPoint];
-            let normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
-
-            rectPositions = [leftBottomProjPoint, windowPositions[0], windowPositions[3], leftTopProjPoint];
-            normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
-
-            rectPositions = [windowPositions[1], rightBottomProjPoint, rightTopProjPoint, windowPositions[2]];
-            normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
-
-            rectPositions = [leftTopProjPoint, rightTopProjPoint, positions[2], positions[3]];
-            normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle);
-            this.BuildRectangle(rectPositions, normal, House.wallColor);
+            let normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
+            this.BuildRectangleWithCutOutRectangle(positions, windowOutsidePositions, normal, House.wallColor);
 
             //wall inside
-            rectPositions = [windowPositions[0], windowPositions[1], windowPositions[5], windowPositions[4]];
+            const windowMiddle = this.GetMiddlePoint(windowOutsidePositions);
+
+            let rectPositions = [windowOutsidePositions[0], windowOutsidePositions[1], windowsInsidePositions[1], windowsInsidePositions[0]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
 
-            rectPositions = [windowPositions[1], windowPositions[5], windowPositions[6], windowPositions[2]];
+            rectPositions = [windowOutsidePositions[1], windowsInsidePositions[1], windowsInsidePositions[2], windowOutsidePositions[2]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
             
-            rectPositions = [windowPositions[3], windowPositions[2], windowPositions[6], windowPositions[7]];
+            rectPositions = [windowOutsidePositions[3], windowOutsidePositions[2], windowsInsidePositions[2], windowsInsidePositions[3]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
 
-            rectPositions = [windowPositions[0], windowPositions[4], windowPositions[7], windowPositions[3]];
+            rectPositions = [windowOutsidePositions[0], windowsInsidePositions[0], windowsInsidePositions[3], windowOutsidePositions[3]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.wallColor);
 
             //window
-            rectPositions = [windowPositions[4], windowPositions[5], windowPositions[6], windowPositions[7]];
+            rectPositions = [windowsInsidePositions[0], windowsInsidePositions[1], windowsInsidePositions[2], windowsInsidePositions[3]];
             normal = this.CalculateNormal(rectPositions[0], rectPositions[1], rectPositions[2], windowMiddle, true);
             this.BuildRectangle(rectPositions, normal, House.windowColor);
         }

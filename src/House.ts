@@ -51,14 +51,7 @@ export class House extends Mesh {
             positions.push(topCorners[i % 4]);
 
             const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
-
-            if (i == 1) {
-                this.BuildWallWithDoor(positions, normal);
-            } else if (i == 0) {
-                this.BuildWallWithWindow(positions, normal);
-            } else {
-                this.BuildRectangle(positions, normal, House.wallColor);
-            }
+            this.BuildRectangle(positions, normal, House.wallColor);
         }
 
         //roof
@@ -75,6 +68,7 @@ export class House extends Mesh {
         }
     }
 
+    /*
     private BuildWallWithDoor(positions: Vec3[], wallNormal: Vec3) {
 
         const doorOutsidePositions: Vec3[] = [];
@@ -186,6 +180,7 @@ export class House extends Mesh {
             this.BuildRectangle(rectPositions, normal, House.windowColor);
         }
     }
+    */
 }
 
 class Parameters {

@@ -1,13 +1,18 @@
-import { Vec3, ML, Vec4 } from './MathLib';
+import { Vec3, ML, Vec4, Vec2 } from './MathLib';
 import { Mesh } from './Mesh';
 import { Vertex } from './Vertex';
 
 export class House extends Mesh {
 
-    static wallColor: Vec4 = [0.8, 0.8, 0.8, 1.0];
-    static roofColor: Vec4 = [0.74, 0.38, 0.31, 1.0];
-    static doorColor: Vec4 = [0.44, 0.29, 0.14, 1.0];
-    static windowColor: Vec4 = [0.3, 0.4, 0.8, 1.0];
+    //static wallColor: Vec4 = [0.8, 0.8, 0.8, 1.0];
+    //static roofColor: Vec4 = [0.74, 0.38, 0.31, 1.0];
+    //static doorColor: Vec4 = [0.44, 0.29, 0.14, 1.0];
+    //static windowColor: Vec4 = [0.3, 0.4, 0.8, 1.0];
+
+    static wallTextureCoord: Vec2 = [0.5, 0];
+    static roofTextureCoord: Vec2 = [0.5, 0.75];
+    static doorTextureCoord: Vec2 = [0, 0];
+    static windowTextureCoord: Vec2 = [0, 0.25];
 
     objMiddle: Vec3 = [0, 0, 0];
 
@@ -51,7 +56,14 @@ export class House extends Mesh {
             positions.push(topCorners[i % 4]);
 
             const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
-            this.BuildRectangle(positions, normal, House.wallColor);
+
+            if (i == 0) {
+                this.BuildRectangle(positions, normal, House.doorTextureCoord);
+            } else if (i == 1) {
+                this.BuildRectangle(positions, normal, House.windowTextureCoord);
+            } else {
+                this.BuildRectangle(positions, normal, House.wallTextureCoord);
+            }
         }
 
         //roof
@@ -64,7 +76,7 @@ export class House extends Mesh {
 
             const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
 
-            this.BuildTriangle(positions, normal, House.roofColor);
+            this.BuildTriangle(positions, normal, House.roofTextureCoord);
         }
     }
 

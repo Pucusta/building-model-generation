@@ -1,4 +1,4 @@
-import { ML, Vec3, Vec4 } from "./MathLib";
+import { ML, Vec2, Vec3, Vec4 } from "./MathLib";
 import { Vertex } from "./Vertex";
 
 export abstract class Mesh {
@@ -12,11 +12,11 @@ export abstract class Mesh {
 
     protected abstract Build(positions: Vec3[]): void;
 
-    protected BuildRectangle(positions: Vec3[], normal: Vec3, color: Vec4) {
-        const v1 = new Vertex(positions[0], normal, color);
-        const v2 = new Vertex(positions[1], normal, color);
-        const v3 = new Vertex(positions[2], normal, color);
-        const v4 = new Vertex(positions[3], normal, color);
+    protected BuildRectangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
+        const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
+        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + 0.25, textureCoord[1]]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + 0.25, textureCoord[1] + 0.25]);
+        const v4 = new Vertex(positions[3], normal, [textureCoord[0], textureCoord[1] + 0.25]);
 
         const i1 = this.vertices.push(v1) - 1;
         const i2 = this.vertices.push(v2) - 1;
@@ -31,10 +31,10 @@ export abstract class Mesh {
         this.indices.push(i1);
     }
 
-    protected BuildTriangle(positions: Vec3[], normal: Vec3, color: Vec4) {
-        const v1 = new Vertex(positions[0], normal, color);
-        const v2 = new Vertex(positions[1], normal, color);
-        const v3 = new Vertex(positions[2], normal, color);
+    protected BuildTriangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
+        const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
+        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + 0.25, textureCoord[1]]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + 0.125, textureCoord[1] + 0.25]);
 
         const i1 = this.vertices.push(v1) - 1;
         const i2 = this.vertices.push(v2) - 1;
@@ -45,15 +45,16 @@ export abstract class Mesh {
         this.indices.push(i3);
     }
 
-    protected BuildRectangleWithCutOutRectangle(rectPositions: Vec3[], cutoutRectPositions: Vec3[], normal: Vec3, color: Vec4) {
-        const v1 = new Vertex(rectPositions[0], normal, color);
-        const v2 = new Vertex(rectPositions[1], normal, color);
-        const v3 = new Vertex(rectPositions[2], normal, color);
-        const v4 = new Vertex(rectPositions[3], normal, color);
-        const v5 = new Vertex(cutoutRectPositions[0], normal, color);
-        const v6 = new Vertex(cutoutRectPositions[1], normal, color);
-        const v7 = new Vertex(cutoutRectPositions[2], normal, color);
-        const v8 = new Vertex(cutoutRectPositions[3], normal, color);
+    /*
+    protected BuildRectangleWithCutOutRectangle(rectPositions: Vec3[], cutoutRectPositions: Vec3[], normal: Vec3, textureCoord: Vec2) {
+        const v1 = new Vertex(rectPositions[0], normal, textureCoord);
+        const v2 = new Vertex(rectPositions[1], normal, textureCoord);
+        const v3 = new Vertex(rectPositions[2], normal, textureCoord);
+        const v4 = new Vertex(rectPositions[3], normal, textureCoord);
+        const v5 = new Vertex(cutoutRectPositions[0], normal, textureCoord);
+        const v6 = new Vertex(cutoutRectPositions[1], normal, textureCoord);
+        const v7 = new Vertex(cutoutRectPositions[2], normal, textureCoord);
+        const v8 = new Vertex(cutoutRectPositions[3], normal, textureCoord);
 
         const rectIndices: number[] = [];
         const cutoutIndices: number[] = [];
@@ -77,6 +78,7 @@ export abstract class Mesh {
             this.indices.push(rectIndices[(i + 1) % 4]);
         }
     }
+    */
 
     /*
     protected CalculateNormals() {
@@ -93,7 +95,7 @@ export abstract class Mesh {
             v3.normal = normal;
         }
     }
-*/
+    */
     protected CalculateNormal(vertex1: Vec3, vertex2: Vec3, vertex3: Vec3, objectMiddle: Vec3, inverse: boolean = false): Vec3 {
         const vector1 = ML.sub3(vertex2, vertex1);
         const vector2 = ML.sub3(vertex3, vertex1);
@@ -123,7 +125,8 @@ export abstract class Mesh {
 
             const position = this.vertices[i].position;
             const normal = this.vertices[i].normal;
-            const color = this.vertices[i].color;
+            //const color = this.vertices[i].color;
+            const textCoord = this.vertices[i].textureCoord;
 
             vertexData.push(
                 position[0],
@@ -132,10 +135,12 @@ export abstract class Mesh {
                 normal[0],
                 normal[1],
                 normal[2],
-                color[0],
-                color[1],
-                color[2],
-                color[3]
+                textCoord[0],
+                textCoord[1]
+                //color[0],
+                //color[1],
+                //color[2],
+                //color[3]
             );
         }
 

@@ -48,6 +48,30 @@ function initWebGL2() {
   const indices = house.indices;
   console.log("num of vertices: " + house.vertices.length);
 
+  const textureImage = new Image();
+  textureImage.onload = () => {
+
+    const texture = gl.createTexture();
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureImage);
+  };
+
+  textureImage.onerror = () => {
+    console.error("Failed to load the texture image.");
+  };
+
+  textureImage.src = "../textures/tileset-256x256.png";
+
   const modelViewMatrix = mat4.create();
   mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -10.0]);
   mat4.rotateX(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(30));
@@ -70,9 +94,7 @@ function initWebGL2() {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
   const vertexShader: WebGLShader | null = gl.createShader(gl.VERTEX_SHADER);
-  const fragmentShader: WebGLShader | null = gl.createShader(
-    gl.FRAGMENT_SHADER
-  );
+  const fragmentShader: WebGLShader | null = gl.createShader(gl.FRAGMENT_SHADER);
   const shaderProgram: WebGLProgram | null = gl.createProgram();
 
   if (shaderProgram && vertexShader && fragmentShader) {
@@ -115,14 +137,14 @@ function initWebGL2() {
       shaderProgram,
       "aVertexNormal"
     );
-    const vertexColorAttributeLocation = gl.getAttribLocation(
+    const vertexTextureCoordAttributeLocation = gl.getAttribLocation(
       shaderProgram,
-      "aVertexColor"
+      "aTextureCoord"
     );
 
     gl.enableVertexAttribArray(vertexPositionAttributeLocation);
     gl.enableVertexAttribArray(vertexNormalAttributeLocation);
-    gl.enableVertexAttribArray(vertexColorAttributeLocation);
+    gl.enableVertexAttribArray(vertexTextureCoordAttributeLocation);
 
     const vertexDataBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexDataBuffer);
@@ -137,7 +159,7 @@ function initWebGL2() {
       3,
       gl.FLOAT,
       false,
-      10 * Float32Array.BYTES_PER_ELEMENT,
+      8 * Float32Array.BYTES_PER_ELEMENT,
       0
     );
     gl.vertexAttribPointer(
@@ -145,15 +167,15 @@ function initWebGL2() {
       3,
       gl.FLOAT,
       false,
-      10 * Float32Array.BYTES_PER_ELEMENT,
+      8 * Float32Array.BYTES_PER_ELEMENT,
       3 * Float32Array.BYTES_PER_ELEMENT
     );
     gl.vertexAttribPointer(
-      vertexColorAttributeLocation,
-      4,
+      vertexTextureCoordAttributeLocation,
+      2,
       gl.FLOAT,
       false,
-      10 * Float32Array.BYTES_PER_ELEMENT,
+      8 * Float32Array.BYTES_PER_ELEMENT,
       6 * Float32Array.BYTES_PER_ELEMENT
     );
 
@@ -189,6 +211,12 @@ function initWebGL2() {
       shaderProgram,
       "uRotationMatrix"
     );
+
+    const textureUniformLocation = gl.getUniformLocation(
+      shaderProgram,
+      "uTexture"
+    );
+    gl.uniform1i(textureUniformLocation, 0);
 
     const draw = () => {
       mat4.rotateY(rotationMatrix, rotationMatrix, glMatrix.toRadian(0.1));

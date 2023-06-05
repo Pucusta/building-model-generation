@@ -9,23 +9,32 @@ export class House extends Mesh {
     static roofTextureCoord: Vec2 = [0, 0.75];
     static doorTextureCoord: Vec2 = [0, 0];
     static windowTextureCoord: Vec2 = [0, 0.25];
+    static balconyTextureCoord: Vec2 = [0, 0.5];
 
     objMiddle: Vec3 = [0, 0, 0];
 
-    constructor(positions: Vec3[]) {
-        super(positions);
+    constructor(positions: Vec3[], numOfFloors: number) {
+        super();
+        this.Build(positions, numOfFloors);
     }
 
-    protected Build(positions: Vec3[]) {
-        const bottomCorners = positions;
-        const topCorners: Vec3[] = bottomCorners.map(v => [v[0], v[1] + Parameters.wallHeight, v[2]]);
-        this.objMiddle = this.GetMiddlePoint(bottomCorners.concat(topCorners));
+    private Build(positions: Vec3[], numOfFloors: number = 1) {
+        let bottomCorners = positions;
+        let topCorners: Vec3[] = bottomCorners.map(v => [v[0], v[1] + Parameters.wallHeight, v[2]]);
+        this.objMiddle = this.GetMiddlePoint(positions.concat(topCorners));
+        this.BuildGroundFloor(bottomCorners, topCorners);
 
-        this.BuildWalls(bottomCorners, topCorners);
+        for (let i = 1; i < numOfFloors; i++) { 
+            bottomCorners = topCorners;
+            topCorners = bottomCorners.map(v => [v[0], v[1] + Parameters.wallHeight, v[2]]);
+            this.objMiddle = this.GetMiddlePoint(positions.concat(topCorners));
+            this.BuildUpperFloor(bottomCorners, topCorners);
+        }
+
         this.BuildRoof(topCorners);  
     }
 
-    private BuildWalls(bottomCorners: Vec3[], topCorners: Vec3[]) {
+    private BuildGroundFloor(bottomCorners: Vec3[], topCorners: Vec3[]) {
         let bottomMiddle: Vec3 = [0, 0, 0];
         for (let i = 0; i < bottomCorners.length; i++) {
             bottomMiddle = ML.add3(bottomMiddle, bottomCorners[i]);
@@ -47,6 +56,30 @@ export class House extends Mesh {
                 this.BuildRectangle(positions, normal, House.windowTextureCoord);
             } else {
                 this.BuildRectangle(positions, normal, House.wallTextureCoord);
+            }
+        }
+    }
+
+    private BuildUpperFloor(bottomCorners: Vec3[], topCorners: Vec3[]) {
+        let bottomMiddle: Vec3 = [0, 0, 0];
+        for (let i = 0; i < bottomCorners.length; i++) {
+            bottomMiddle = ML.add3(bottomMiddle, bottomCorners[i]);
+        }
+        bottomMiddle = [bottomMiddle[0] / bottomCorners.length, bottomMiddle[1] / bottomCorners.length, bottomMiddle[2] / bottomCorners.length];
+
+        for (let i = 0; i < 4; i++) {
+            const positions: Vec3[] = [];
+            positions.push(bottomCorners[i % 4]);
+            positions.push(bottomCorners[(i + 1) % 4]);
+            positions.push(topCorners[(i + 1) % 4]);
+            positions.push(topCorners[i % 4]);
+
+            const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
+
+            if (i % 2 == 0) {
+                this.BuildRectangle(positions, normal, House.windowTextureCoord);
+            } else {
+                this.BuildRectangle(positions, normal, House.balconyTextureCoord);
             }
         }
     }

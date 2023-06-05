@@ -7,11 +7,7 @@ export abstract class Mesh {
     vertices: Vertex[] = [];
     indices: number[] = [];
 
-    constructor(positions: Vec3[]) {
-        this.Build(positions);
-    }
-
-    protected abstract Build(positions: Vec3[]): void;
+    constructor() {}
 
     protected BuildRectangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
         let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;

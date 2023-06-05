@@ -3,7 +3,7 @@ export class Parameters {
     static wallHeight = 3;
 
     static roofAngle = 30;
-    //static roofHeight = 3;
+    static roofHeight = 3;
 
     static eavesWidth = 0.2;
 

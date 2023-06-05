@@ -42,7 +42,7 @@ function initWebGL2() {
   document.body.appendChild(canvas); // appends/adds the canvas element to the document's body
   onResize(); // resizes the canvas (it needs to be done, because otherwise it will not resize until you resize your window)
 
-  const corners: Vec3[] = [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]];
+  const corners: Vec3[] = [[-5, 0, -7], [5, 0, -7], [5, 0, 7], [-5, 0, 7]];
   const house = new House(corners);
   const vertexData = house.GetVertexData();
   const indices = house.indices;
@@ -56,8 +56,8 @@ function initWebGL2() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
@@ -73,7 +73,7 @@ function initWebGL2() {
   textureImage.src = "../textures/tileset-256x256.png";
 
   const modelViewMatrix = mat4.create();
-  mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -10.0]);
+  mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -50.0]);
   mat4.rotateX(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(30));
   mat4.rotateY(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(45));
 

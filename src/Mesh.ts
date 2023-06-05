@@ -1,4 +1,5 @@
 import { ML, Vec2, Vec3, Vec4 } from "./MathLib";
+import { Parameters } from "./Parameters";
 import { Vertex } from "./Vertex";
 
 export abstract class Mesh {
@@ -13,10 +14,40 @@ export abstract class Mesh {
     protected abstract Build(positions: Vec3[]): void;
 
     protected BuildRectangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
+        let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;
+        let height = ML.getLength3(ML.sub3(positions[1], positions[2])) * Parameters.textureToMeterRatio;
+
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
-        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + 0.25, textureCoord[1]]);
-        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + 0.25, textureCoord[1] + 0.25]);
-        const v4 = new Vertex(positions[3], normal, [textureCoord[0], textureCoord[1] + 0.25]);
+        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + length, textureCoord[1] + height]);
+        const v4 = new Vertex(positions[3], normal, [textureCoord[0], textureCoord[1] + height]);
+
+        const i1 = this.vertices.push(v1) - 1;
+        const i2 = this.vertices.push(v2) - 1;
+        const i3 = this.vertices.push(v3) - 1;
+        const i4 = this.vertices.push(v4) - 1;
+
+        this.indices.push(i1);
+        this.indices.push(i2);
+        this.indices.push(i3);
+        this.indices.push(i3);
+        this.indices.push(i4);
+        this.indices.push(i1);
+    }
+
+    protected BuildTrapezoid(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
+        let rightSideLength = ML.getLength3(ML.sub3(positions[3], positions[0]));
+        let leftSideLength = ML.getLength3(ML.sub3(positions[2], positions[1]));
+        let angle = ML.getAngle3(ML.sub3(positions[3], positions[0]), ML.sub3(positions[1], positions[0]));
+        let leftOffsetLength = Math.cos(angle) * rightSideLength * Parameters.textureToMeterRatio
+        let rightOffsetLength = Math.cos(angle) * leftSideLength * Parameters.textureToMeterRatio
+        let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;
+        let height = Math.sin(angle) * rightSideLength * Parameters.textureToMeterRatio;
+        
+        const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
+        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + length - rightOffsetLength, textureCoord[1] + 0.25]);
+        const v4 = new Vertex(positions[3], normal, [textureCoord[0] + leftOffsetLength, textureCoord[1] + 0.25]);
 
         const i1 = this.vertices.push(v1) - 1;
         const i2 = this.vertices.push(v2) - 1;
@@ -32,9 +63,14 @@ export abstract class Mesh {
     }
 
     protected BuildTriangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
+        let sideLength = ML.getLength3(ML.sub3(positions[2], positions[0]));
+        let angle = ML.getAngle3(ML.sub3(positions[2], positions[0]), ML.sub3(positions[1], positions[0]));
+        let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;
+        let height = Math.sin(angle) * sideLength  * Parameters.textureToMeterRatio;
+
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
-        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + 0.25, textureCoord[1]]);
-        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + 0.125, textureCoord[1] + 0.25]);
+        const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + length / 2, textureCoord[1] + 0.25]);
 
         const i1 = this.vertices.push(v1) - 1;
         const i2 = this.vertices.push(v2) - 1;
@@ -45,57 +81,6 @@ export abstract class Mesh {
         this.indices.push(i3);
     }
 
-    /*
-    protected BuildRectangleWithCutOutRectangle(rectPositions: Vec3[], cutoutRectPositions: Vec3[], normal: Vec3, textureCoord: Vec2) {
-        const v1 = new Vertex(rectPositions[0], normal, textureCoord);
-        const v2 = new Vertex(rectPositions[1], normal, textureCoord);
-        const v3 = new Vertex(rectPositions[2], normal, textureCoord);
-        const v4 = new Vertex(rectPositions[3], normal, textureCoord);
-        const v5 = new Vertex(cutoutRectPositions[0], normal, textureCoord);
-        const v6 = new Vertex(cutoutRectPositions[1], normal, textureCoord);
-        const v7 = new Vertex(cutoutRectPositions[2], normal, textureCoord);
-        const v8 = new Vertex(cutoutRectPositions[3], normal, textureCoord);
-
-        const rectIndices: number[] = [];
-        const cutoutIndices: number[] = [];
-
-        rectIndices.push(this.vertices.push(v1) - 1);
-        rectIndices.push(this.vertices.push(v2) - 1);
-        rectIndices.push(this.vertices.push(v3) - 1);
-        rectIndices.push(this.vertices.push(v4) - 1);
-        cutoutIndices.push(this.vertices.push(v5) - 1);
-        cutoutIndices.push(this.vertices.push(v6) - 1);
-        cutoutIndices.push(this.vertices.push(v7) - 1);
-        cutoutIndices.push(this.vertices.push(v8) - 1);
-
-        for (let i = 0; i < 4; i++) {
-            this.indices.push(rectIndices[i % 4]);
-            this.indices.push(rectIndices[(i + 1) % 4]);
-            this.indices.push(cutoutIndices[i % 4]);
-
-            this.indices.push(cutoutIndices[i % 4]);
-            this.indices.push(cutoutIndices[(i + 1) % 4]);
-            this.indices.push(rectIndices[(i + 1) % 4]);
-        }
-    }
-    */
-
-    /*
-    protected CalculateNormals() {
-        for (let i = 0; i < this.indices.length - 2; i += 3) {
-            let i1 = this.indices[i];
-            let i2 = this.indices[i + 1];
-            let i3 = this.indices[i + 2];
-            let v1 = this.vertices[i1];
-            let v2 = this.vertices[i2];
-            let v3 = this.vertices[i3];
-            let normal = this.CalculateNormal(v1.position, v2.position, v3.position);
-            v1.normal = normal;
-            v2.normal = normal;
-            v3.normal = normal;
-        }
-    }
-    */
     protected CalculateNormal(vertex1: Vec3, vertex2: Vec3, vertex3: Vec3, objectMiddle: Vec3, inverse: boolean = false): Vec3 {
         const vector1 = ML.sub3(vertex2, vertex1);
         const vector2 = ML.sub3(vertex3, vertex1);
@@ -115,7 +100,6 @@ export abstract class Mesh {
             }
         }
 
-      
         return normal;
     }
 
@@ -125,7 +109,6 @@ export abstract class Mesh {
 
             const position = this.vertices[i].position;
             const normal = this.vertices[i].normal;
-            //const color = this.vertices[i].color;
             const textCoord = this.vertices[i].textureCoord;
 
             vertexData.push(
@@ -137,10 +120,6 @@ export abstract class Mesh {
                 normal[2],
                 textCoord[0],
                 textCoord[1]
-                //color[0],
-                //color[1],
-                //color[2],
-                //color[3]
             );
         }
 
@@ -156,7 +135,6 @@ export abstract class Mesh {
         }
 
         middle = ML.setLength3(middle, ML.getLength3(middle) / numOfPositions);
-        //middle = [middle[0] / numOfPositions, middle[1] / numOfPositions, middle[2] / numOfPositions];
         return middle;
     }
 }

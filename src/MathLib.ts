@@ -14,14 +14,6 @@ export class ML
         return this.dot3( this.sub3( planePoint, linePoint ), planeN ) / this.dot3( planeN, lineDir );
     }
 
-    static projection3( v1: Vec3, v2: Vec3 ): Vec3 {
-        return [
-            (v2[0] * v1[0] + v2[1] * v1[1] + v2[2] * v1[2]) / (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * v1[0],
-            (v2[0] * v1[0] + v2[1] * v1[1] + v2[2] * v1[2]) / (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * v1[1],
-            (v2[0] * v1[0] + v2[1] * v1[1] + v2[2] * v1[2]) / (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) * v1[2],
-          ];
-    }
-
     static dot3( v1: Vec3, v2: Vec3 ): number
     {
         return v1[ 0 ] * v2[ 0 ] + v1[ 1 ] * v2[ 1 ] + v1[ 2 ] * v2[ 2 ];
@@ -36,6 +28,16 @@ export class ML
           z1 * x2 - x1 * z2,
           x1 * y2 - y1 * x2
         ];
+    }
+
+    static getAngle3(v1: Vec3, v2: Vec3): number
+    {
+        return Math.acos(this.dot3(v1, v2) / (this.getLength3(v1) * this.getLength3(v2)));
+    }
+
+    static scalarProjection3(v1: Vec3, v2: Vec3)
+    {
+        return this.getLength3(v1) * Math.cos(this.getAngle3(v1, v2));
     }
 
     static sub3( v1: Vec3, v2: Vec3 ): Vec3

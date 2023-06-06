@@ -5,7 +5,6 @@ import { Vertex } from './Vertex';
 
 export class House extends Mesh {
 
-    static wallTextureCoord: Vec2 = [0.5, 0];
     static roofTextureCoord: Vec2 = [0, 0.75];
     static doorTextureCoord: Vec2 = [0, 0];
     static windowTextureCoord: Vec2 = [0, 0.25];
@@ -52,10 +51,8 @@ export class House extends Mesh {
 
             if (i == 0) {
                 this.BuildRectangle(positions, normal, House.doorTextureCoord);
-            } else if (i == 1) {
-                this.BuildRectangle(positions, normal, House.windowTextureCoord);
             } else {
-                this.BuildRectangle(positions, normal, House.wallTextureCoord);
+                this.BuildRectangle(positions, normal, House.windowTextureCoord);
             }
         }
     }
@@ -76,11 +73,7 @@ export class House extends Mesh {
 
             const normal = this.CalculateNormal(positions[0], positions[1], positions[2], this.objMiddle);
 
-            if (i % 2 == 0) {
-                this.BuildRectangle(positions, normal, House.windowTextureCoord);
-            } else {
-                this.BuildRectangle(positions, normal, House.balconyTextureCoord);
-            }
+            this.BuildRectangle(positions, normal, House.balconyTextureCoord);
         }
     }
 

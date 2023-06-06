@@ -1,11 +1,11 @@
 export class Parameters {
-
+    
     static wallHeight = 3;
 
     static roofAngle = 30;
     static roofHeight = 3;
 
-    static eavesWidth = 0.2;
+    static eavesWidth = 0.5;
 
     static doorWidth = 0.5;
     static doorHeight = 1;
@@ -18,5 +18,5 @@ export class Parameters {
     static windowBottomOffset = 0.4;
     static windowDepth = 0.1;
 
-    static textureToMeterRatio = 0.25 / this.wallHeight;
+    static textureRatio = 0.25;
 }

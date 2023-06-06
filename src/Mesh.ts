@@ -10,12 +10,15 @@ export abstract class Mesh {
     constructor() {}
 
     protected BuildRectangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
-        let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;
-        let height = ML.getLength3(ML.sub3(positions[1], positions[2])) * Parameters.textureToMeterRatio;
+        let length = ML.getLength3(ML.sub3(positions[0], positions[1]));
+        let height = ML.getLength3(ML.sub3(positions[1], positions[2]));
+
+        length = Math.round(length / Parameters.wallHeight) * Parameters.textureRatio;
+        height = Math.round(height / Parameters.wallHeight) * Parameters.textureRatio;
 
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
         const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);
-        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + length, textureCoord[1] + height]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + length, textureCoord[1] + height - 0.01]);
         const v4 = new Vertex(positions[3], normal, [textureCoord[0], textureCoord[1] + height]);
 
         const i1 = this.vertices.push(v1) - 1;
@@ -35,10 +38,16 @@ export abstract class Mesh {
         let rightSideLength = ML.getLength3(ML.sub3(positions[3], positions[0]));
         let leftSideLength = ML.getLength3(ML.sub3(positions[2], positions[1]));
         let angle = ML.getAngle3(ML.sub3(positions[3], positions[0]), ML.sub3(positions[1], positions[0]));
-        let leftOffsetLength = Math.cos(angle) * rightSideLength * Parameters.textureToMeterRatio
-        let rightOffsetLength = Math.cos(angle) * leftSideLength * Parameters.textureToMeterRatio
-        let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;
-        let height = Math.sin(angle) * rightSideLength * Parameters.textureToMeterRatio;
+        let leftOffsetLength = Math.cos(angle) * rightSideLength;
+        let rightOffsetLength = Math.cos(angle) * leftSideLength;
+        let length = ML.getLength3(ML.sub3(positions[0], positions[1]));
+        let height = Math.sin(angle) * rightSideLength;
+
+        let lengthRatio = Math.round(length / Parameters.wallHeight) / (length / Parameters.wallHeight);
+        leftOffsetLength = leftOffsetLength * lengthRatio / Parameters.wallHeight * Parameters.textureRatio;
+        rightOffsetLength = rightOffsetLength * lengthRatio / Parameters.wallHeight * Parameters.textureRatio;
+        length = Math.round(length / Parameters.wallHeight) * Parameters.textureRatio;
+        height = Math.round(height / Parameters.wallHeight) * Parameters.textureRatio;
         
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
         const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);
@@ -61,8 +70,11 @@ export abstract class Mesh {
     protected BuildTriangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
         let sideLength = ML.getLength3(ML.sub3(positions[2], positions[0]));
         let angle = ML.getAngle3(ML.sub3(positions[2], positions[0]), ML.sub3(positions[1], positions[0]));
-        let length = ML.getLength3(ML.sub3(positions[0], positions[1])) * Parameters.textureToMeterRatio;
-        let height = Math.sin(angle) * sideLength  * Parameters.textureToMeterRatio;
+        let length = ML.getLength3(ML.sub3(positions[0], positions[1]));
+        let height = Math.sin(angle) * sideLength;
+
+        length = Math.round(length / Parameters.wallHeight) * Parameters.textureRatio;
+        height = Math.round(height / Parameters.wallHeight) * Parameters.textureRatio;
 
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
         const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);

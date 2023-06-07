@@ -35,13 +35,14 @@ export abstract class Mesh {
     }
 
     protected BuildTrapezoid(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
-        let rightSideLength = ML.getLength3(ML.sub3(positions[3], positions[0]));
-        let leftSideLength = ML.getLength3(ML.sub3(positions[2], positions[1]));
-        let angle = ML.getAngle3(ML.sub3(positions[3], positions[0]), ML.sub3(positions[1], positions[0]));
-        let leftOffsetLength = Math.cos(angle) * rightSideLength;
-        let rightOffsetLength = Math.cos(angle) * leftSideLength;
+        let leftSideLength = ML.getLength3(ML.sub3(positions[3], positions[0]));
+        let rightSideLength = ML.getLength3(ML.sub3(positions[2], positions[1]));
+        let leftAngle = ML.getAngle3(ML.sub3(positions[3], positions[0]), ML.sub3(positions[1], positions[0]));
+        let rightAngle = ML.getAngle3(ML.sub3(positions[2], positions[1]), ML.sub3(positions[0], positions[1]));
+        let leftOffsetLength = Math.cos(leftAngle) * leftSideLength;
+        let rightOffsetLength = Math.cos(rightAngle) * rightSideLength;
         let length = ML.getLength3(ML.sub3(positions[0], positions[1]));
-        let height = Math.sin(angle) * rightSideLength;
+        let height = Math.sin(leftAngle) * leftSideLength;
 
         let lengthRatio = Math.round(length / Parameters.wallHeight) / (length / Parameters.wallHeight);
         leftOffsetLength = leftOffsetLength * lengthRatio / Parameters.wallHeight * Parameters.textureRatio;
@@ -68,17 +69,20 @@ export abstract class Mesh {
     }
 
     protected BuildTriangle(positions: Vec3[], normal: Vec3, textureCoord: Vec2) {
-        let sideLength = ML.getLength3(ML.sub3(positions[2], positions[0]));
-        let angle = ML.getAngle3(ML.sub3(positions[2], positions[0]), ML.sub3(positions[1], positions[0]));
+        let leftSideLength = ML.getLength3(ML.sub3(positions[2], positions[0]));
+        let leftAngle = ML.getAngle3(ML.sub3(positions[2], positions[0]), ML.sub3(positions[1], positions[0]));
+        let leftOffsetLength = Math.cos(leftAngle) * leftSideLength;
         let length = ML.getLength3(ML.sub3(positions[0], positions[1]));
-        let height = Math.sin(angle) * sideLength;
+        let height = Math.sin(leftAngle) * leftSideLength;
 
+        let lengthRatio = Math.round(length / Parameters.wallHeight) / (length / Parameters.wallHeight);
+        leftOffsetLength = leftOffsetLength * lengthRatio / Parameters.wallHeight * Parameters.textureRatio;
         length = Math.round(length / Parameters.wallHeight) * Parameters.textureRatio;
         height = Math.round(height / Parameters.wallHeight) * Parameters.textureRatio;
 
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1]]);
         const v2 = new Vertex(positions[1], normal, [textureCoord[0] + length, textureCoord[1]]);
-        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + length / 2, textureCoord[1] + 0.25]);
+        const v3 = new Vertex(positions[2], normal, [textureCoord[0] + leftOffsetLength, textureCoord[1] + 0.25]);
 
         const i1 = this.vertices.push(v1) - 1;
         const i2 = this.vertices.push(v2) - 1;

@@ -43,7 +43,7 @@ function initWebGL2() {
   onResize(); // resizes the canvas (it needs to be done, because otherwise it will not resize until you resize your window)
 
   const corners: Vec3[] = [[-6, 0, -4], [6, 0, -4], [6, 0, 4], [-6, 0, 4]];
-  const house = new House(corners, 3);
+  const house = new House(corners, 2);
   const vertexData = house.GetVertexData();
   const indices = house.indices;
   console.log("num of vertices: " + house.vertices.length);

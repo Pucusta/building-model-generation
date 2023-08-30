@@ -81,7 +81,7 @@ function WebGL() {
     mat4.fromRotation(rotationMatrix, rotationAngle, rotationAxis);
 
     //Settings
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.viewport(0, 0, canvas.width, canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set the clear color to black
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color and depth buffers
@@ -223,6 +223,7 @@ function WebGL() {
       function resizeCanvas() {
         canvas!.width = window.innerWidth;
         canvas!.height = window.innerHeight;
+        gl!.viewport(0, 0, canvas!.width, canvas!.height);
       }
       
       window.addEventListener('resize', resizeCanvas);

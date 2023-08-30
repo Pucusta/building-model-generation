@@ -139,7 +139,7 @@ export abstract class Mesh {
         let lengthRatio = Math.round(length / Parameters.wallHeight) / (length / Parameters.wallHeight);
         let textureLeftOffsetLength = leftOffsetLength * lengthRatio / Parameters.wallHeight * Parameters.textureRatio;
         let textureLength = Math.round(length / Parameters.wallHeight) * Parameters.textureRatio;
-        let textureHeight = numOfSections * Parameters.textureRatio;
+        //let textureHeight = numOfSections * Parameters.textureRatio;
 
         const v1 = new Vertex(positions[0], normal, [textureCoord[0], textureCoord[1] + 0.002]);
         const v2 = new Vertex(positions[1], normal, [textureCoord[0] + textureLength, textureCoord[1] + 0.002]);

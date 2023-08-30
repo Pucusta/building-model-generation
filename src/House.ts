@@ -1,8 +1,6 @@
-import { vec2 } from 'gl-matrix';
-import { Vec3, ML, Vec4, Vec2 } from './MathLib';
+import { Vec3, ML, Vec2 } from './MathLib';
 import { Mesh } from './Mesh';
 import { Parameters } from './Parameters';
-import { Vertex } from './Vertex';
 
 export class House extends Mesh {
 

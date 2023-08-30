@@ -1,32 +1,31 @@
 {
-  "name": "house-model-generation",
-  "version": "1.0.0",
-  "description": "Generating different LODs for lowpoly house models",
-  "main": "lowpoly_house.js",
+  "name": "my-react-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Pucusta/house-model-generation.git"
-  },
-  "author": "Marcell Galatean",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Pucusta/house-model-generation/issues"
-  },
-  "homepage": "https://github.com/Pucusta/house-model-generation#readme",
-  "type": "module",
   "dependencies": {
-    "gl-matrix": "^3.4.3"
+    "gl-matrix": "^3.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/gl-matrix": "^3.2.0",
-    "ts-loader": "^9.4.2",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
     "typescript": "^5.0.2",
-    "vite": "^4.2.1",
+    "vite": "^4.4.5",
     "vite-plugin-glsl": "^1.1.2"
   }
 }

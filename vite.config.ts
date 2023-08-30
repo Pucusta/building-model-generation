@@ -1,18 +1,16 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 import glsl from 'vite-plugin-glsl';
 
+// https://vitejs.dev/config/
 export default defineConfig({
   build: {
     outDir: 'dist',
   },
-
-  server: {
-    port: 3000,
-  },
+  publicDir: 'public',
 
   plugins: [
-    glsl({
-      include: '**/*.glsl',
-    }),
+    react(),
+    glsl({include: '**/*.glsl',})
   ],
-});
+})

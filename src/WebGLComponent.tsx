@@ -58,7 +58,7 @@ function WebGL() {
       console.error("Failed to load the texture image.");
     };
 
-    textureImage.src = "/tileset-256x256.png";
+    textureImage.src = "./tileset-256x256.png";
 
     //Transformation matrices
     const modelViewMatrix = mat4.create();

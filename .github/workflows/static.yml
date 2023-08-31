@@ -47,6 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
+          name: dist-artifact
           path: dist
 
       - name: Debug Artifact Contents

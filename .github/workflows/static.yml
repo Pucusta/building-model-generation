@@ -38,8 +38,10 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: List Files in Workspace
-        run: ls -R
+      - name: Adjust Index HTML Paths
+        run: |
+          # Replace absolute paths with relative paths in index.html
+          sed -i 's#/assets/#assets/#g' dist/index.html
         
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -49,15 +51,7 @@ jobs:
         with:
           name: dist-artifact
           path: dist
-
-      - name: Debug Artifact Contents
-        run: |
-          echo "Contents of artifact:"
-          ls -R dist-artifact
-      
-          echo "Contents of assets folder within artifact:"
-          ls -R dist-artifact/assets
-          
+                
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2

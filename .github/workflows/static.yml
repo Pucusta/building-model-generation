@@ -45,7 +45,7 @@ jobs:
           sed -i 's#href="#href="/building-model-generation#g' dist/index.html
       
           # Replace src attributes in assets/js files
-          find dist/assets -name "*.js" -type f -exec sed -i 's#src = "#src = "/building-model-generation#g' {} \;
+          find dist/assets -name "*.js" -type f -exec sed -i 's#src="#src="/building-model-generation#g' {} \;
         
       - name: Setup Pages
         uses: actions/configure-pages@v3

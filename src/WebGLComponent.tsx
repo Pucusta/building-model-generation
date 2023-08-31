@@ -62,7 +62,7 @@ function WebGL() {
 
     //Transformation matrices
     const modelViewMatrix = mat4.create();
-    mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -40.0]);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -4.0, -30.0]);
     mat4.rotateX(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(30));
     mat4.rotateY(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(45));
 

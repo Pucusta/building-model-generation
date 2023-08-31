@@ -53,10 +53,10 @@ jobs:
       - name: Debug Artifact Contents
         run: |
           echo "Contents of artifact:"
-          ls -R ${{ github.workspace }}/dist-artifact
+          ls -R dist-artifact
       
           echo "Contents of assets folder within artifact:"
-          ls -R ${{ github.workspace }}/dist-artifact/assets
+          ls -R dist-artifact/assets
           
       - name: Deploy to GitHub Pages
         id: deployment

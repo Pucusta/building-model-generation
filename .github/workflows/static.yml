@@ -38,10 +38,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Adjust Index HTML Paths
+      - name: Adjust Index HTML and JS Paths
         run: |
-          # Replace absolute paths with relative paths in index.html
-          sed -i 's#/assets/#assets/#g' dist/index.html
+          # Replace src attributes in index.html
+          sed -i 's#src="#src="/building-model-generation#g' dist/index.html
+      
+          # Replace src attributes in assets/js files
+          find dist/assets -name "*.js" -type f -exec sed -i 's#src = "#src = "/building-model-generation#g' {} \;
         
       - name: Setup Pages
         uses: actions/configure-pages@v3

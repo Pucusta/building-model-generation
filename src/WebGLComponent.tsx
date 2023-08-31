@@ -29,7 +29,7 @@ function WebGL() {
     }
 
     //Building generation
-    const corners: Vec3[] = [[-3, 0, -6], [3, 0, -6], [3, 0, 6], [-3, 0, 6]];
+    const corners: Vec3[] = [[-6, 0, -3], [6, 0, -3], [6, 0, 3], [-6, 0, 3]];
     const house = new House(corners, 2);
     const vertexData = house.GetVertexData();
     const indices = house.indices;

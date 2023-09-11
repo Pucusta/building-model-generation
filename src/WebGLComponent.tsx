@@ -85,7 +85,7 @@ function WebGL() {
     const projectionMatrix = mat4.create();
     mat4.perspective(
       projectionMatrix,
-      glMatrix.toRadian(10),
+      glMatrix.toRadian(15),
       canvas.width / canvas.height,
       0.1,
       200.0

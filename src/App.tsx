@@ -1,5 +1,6 @@
 import './App.css'
 import WebGL from './WebGLComponent'
+import InputComponent from './InputComponent'
 
 function App() {
 
@@ -8,6 +9,9 @@ function App() {
       <h1>Building Model Generation</h1>
       <div className="canvas-container">
         <WebGL />
+      </div>
+      <div>
+        <InputComponent />
       </div>
     </>
   )

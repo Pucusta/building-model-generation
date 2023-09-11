@@ -9,10 +9,14 @@ export class House extends Mesh {
     static windowTextureCoord: Vec2 = [0, 0.25];
     static balconyTextureCoord: Vec2 = [0, 0.5];
 
+    positions: Vec3[];
+    numOfFloors: number;
     objMiddle: Vec3 = [0, 0, 0];
 
     constructor(positions: Vec3[], numOfFloors: number) {
         super();
+        this.positions = positions;
+        this.numOfFloors = numOfFloors;
         this.Build(positions, numOfFloors);
     }
 

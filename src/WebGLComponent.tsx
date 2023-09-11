@@ -49,6 +49,7 @@ function WebGL() {
     
     window.addEventListener('resize', resizeCanvas);
 
+
     //Texture loading
     const textureImage = new Image();
     var texture: WebGLTexture | null;

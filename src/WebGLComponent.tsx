@@ -78,8 +78,9 @@ function WebGL() {
     textureImage.src = "./tileset-256x256.png";
 
     //Transformation matrices
+    const objMiddle = house.objMiddle;
     const modelViewMatrix = mat4.create();
-    mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -0, -100.0]);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0, 5, -100.0]);
     mat4.rotateX(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(30));
     mat4.rotateY(modelViewMatrix, modelViewMatrix, glMatrix.toRadian(45));
 
@@ -130,43 +131,43 @@ function WebGL() {
       return;
     }
 
-    gl.shaderSource(vertexShader!, vertexShaderSource);
-    gl.compileShader(vertexShader!);
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
 
-    if (!gl.getShaderParameter(vertexShader!, gl.COMPILE_STATUS)) {
+    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
       console.error(
-        `Error compiling vertex shader: ${gl.getShaderInfoLog(vertexShader!)}`
+        `Error compiling vertex shader: ${gl.getShaderInfoLog(vertexShader)}`
       );
       return;
     }
 
-    gl.shaderSource(fragmentShader!, fragmentShaderSource);
-    gl.compileShader(fragmentShader!);
+    gl.shaderSource(fragmentShader, fragmentShaderSource);
+    gl.compileShader(fragmentShader);
 
-    if (!gl.getShaderParameter(fragmentShader!, gl.COMPILE_STATUS)) {
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
       console.error(
         `Error compiling fragment shader: ${gl.getShaderInfoLog(
-          fragmentShader!
+          fragmentShader
         )}`
       );
       return;
     }
 
-    gl.attachShader(shaderProgram!, vertexShader!);
-    gl.attachShader(shaderProgram!, fragmentShader!);
-    gl.linkProgram(shaderProgram!);
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
     gl.useProgram(shaderProgram);
 
     const vertexPositionAttributeLocation = gl.getAttribLocation(
-      shaderProgram!,
+      shaderProgram,
       "aVertexPosition"
     );
     const vertexNormalAttributeLocation = gl.getAttribLocation(
-      shaderProgram!,
+      shaderProgram,
       "aVertexNormal"
     );
     const vertexTextureCoordAttributeLocation = gl.getAttribLocation(
-      shaderProgram!,
+      shaderProgram,
       "aTextureCoord"
     );
 
@@ -200,19 +201,19 @@ function WebGL() {
     );
 
     const modelViewUniformLocation = gl.getUniformLocation(
-      shaderProgram!,
+      shaderProgram,
       "uModelViewMatrix"
     );
     gl.uniformMatrix4fv(modelViewUniformLocation, false, modelViewMatrix);
 
     const projectionUniformLocation = gl.getUniformLocation(
-      shaderProgram!,
+      shaderProgram,
       "uProjectionMatrix"
     );
     gl.uniformMatrix4fv(projectionUniformLocation, false, projectionMatrix);
 
     const lightDirectionLocation = gl.getUniformLocation(
-      shaderProgram!,
+      shaderProgram,
       "uLightDirection"
     );
     const lightDirection = vec3.fromValues(1, 2, 1);
@@ -220,16 +221,22 @@ function WebGL() {
     gl.uniform3fv(lightDirectionLocation, lightDirection);
 
     const rotationUniformLocation = gl.getUniformLocation(
-      shaderProgram!,
+      shaderProgram,
       "uRotationMatrix"
     );
 
     const textureUniformLocation = gl.getUniformLocation(
-      shaderProgram!,
+      shaderProgram,
       "uTexture"
     );
     gl.uniform1i(textureUniformLocation, 0);
     
+    const uObjMiddleLocation = gl.getUniformLocation(
+      shaderProgram,
+      'uObjMiddle'
+    );
+    gl.uniform3fv(uObjMiddleLocation, objMiddle);
+
     //Animation
     let animationActive = true;
     let animationFrameId : number;

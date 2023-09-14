@@ -6,11 +6,13 @@ function App() {
 
   return (
     <>
-      <h1>Building Model Generation</h1>
-      <div className="canvas-container">
+      <div>
         <WebGL />
       </div>
-      <div>
+      <div id="topOverlay">
+        <h1>Building Model Generation</h1>
+      </div>
+      <div id="bottomOverlay">
         <InputComponent />
       </div>
     </>

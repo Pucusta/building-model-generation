@@ -3,6 +3,7 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 30px;
+    white-space: nowrap;
   }
   
   .input-row {

@@ -40,7 +40,7 @@ function WebGL() {
       return; // go out of the function; stop this function
     }
 
-    //Event listeners
+    //Canvas resize event listener
     function resizeCanvas() {
       canvas!.width = window.innerWidth;
       canvas!.height = window.innerHeight;
@@ -224,6 +224,7 @@ function WebGL() {
       shaderProgram,
       "uRotationMatrix"
     );
+    gl.uniformMatrix4fv(rotationUniformLocation, false, rotationMatrix);
 
     const textureUniformLocation = gl.getUniformLocation(
       shaderProgram,
@@ -236,6 +237,19 @@ function WebGL() {
       'uObjMiddle'
     );
     gl.uniform3fv(uObjMiddleLocation, objMiddle);
+    
+    //Mouse wheel event listener
+    let magnification = 1.0;
+
+    canvas.addEventListener('wheel', (event) => {
+      if (event.deltaY > 0) {
+        magnification -= 0.1;
+      } else {
+        magnification += 0.1;
+      }
+    
+      //magnificationFactor = Math.max(0.1, magnificationFactor);
+    });
 
     //Animation
     let animationActive = true;
@@ -247,8 +261,12 @@ function WebGL() {
       }
 
       mat4.rotateY(rotationMatrix, rotationMatrix, glMatrix.toRadian(0.1));
+      mat4.scale(modelViewMatrix, modelViewMatrix, [magnification, magnification, magnification]);
+      magnification = 1.0;
+
       gl.useProgram(shaderProgram);
       gl.uniformMatrix4fv(rotationUniformLocation, false, rotationMatrix);
+      gl.uniformMatrix4fv(modelViewUniformLocation, false, modelViewMatrix);
 
       gl.clearColor(0.0, 0.0, 0.0, 1.0); // Set the clear color to black
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color and depth buffers

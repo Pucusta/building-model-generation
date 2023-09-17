@@ -4,7 +4,7 @@ import vertexShaderSource from "./shaders/vertex.glsl";
 import fragmentShaderSource from "./shaders/fragment.glsl";
 import { GetBuildingContext } from './ContextProvider';
 
-function WebGL() {
+function WebGL() {  
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   //Building to display
@@ -241,15 +241,15 @@ function WebGL() {
     //Mouse wheel event listener
     let magnification = 1.0;
 
-    canvas.addEventListener('wheel', (event) => {
+    function handleWheel(event: WheelEvent) {
       if (event.deltaY > 0) {
         magnification -= 0.1;
       } else {
         magnification += 0.1;
       }
-    
-      //magnificationFactor = Math.max(0.1, magnificationFactor);
-    });
+    }
+
+    canvas.addEventListener('wheel', handleWheel);
 
     //Animation
     let animationActive = true;
@@ -301,6 +301,7 @@ function WebGL() {
       gl.deleteTexture(texture);
       
       window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('wheel', handleWheel);
     }
   }, [house])
 

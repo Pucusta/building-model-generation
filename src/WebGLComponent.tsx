@@ -251,6 +251,41 @@ function WebGL() {
 
     canvas.addEventListener('wheel', handleWheel);
 
+    //Mouse drag event listeners
+    let isDragging = false;
+    let startX = 0;
+    let rotation = 0.1;
+
+    function mousedown(event: MouseEvent) {
+      isDragging = true;
+      rotation = 0;
+      startX = event.clientX;
+    }
+
+    function mousemove(event: MouseEvent) {
+      if (isDragging) {
+        const mouseX = event.clientX;
+        const deltaX = mouseX - startX;
+    
+        rotation = deltaX * 0.1;
+    
+        startX = mouseX;
+      }
+    }
+
+    function mouseup() {
+      isDragging = false;
+      rotation = 0.1;
+    }
+
+    canvas.addEventListener('mousedown', mousedown);
+    canvas.addEventListener('mousemove', mousemove);
+    canvas.addEventListener('mouseup', mouseup);
+
+    canvas.addEventListener('selectstart', (event) => {
+      event.preventDefault();
+    });
+
     //Animation
     let animationActive = true;
     let animationFrameId : number;
@@ -260,7 +295,7 @@ function WebGL() {
         return;
       }
 
-      mat4.rotateY(rotationMatrix, rotationMatrix, glMatrix.toRadian(0.1));
+      mat4.rotateY(rotationMatrix, rotationMatrix, glMatrix.toRadian(rotation));
       mat4.scale(modelViewMatrix, modelViewMatrix, [magnification, magnification, magnification]);
       magnification = 1.0;
 
@@ -302,6 +337,9 @@ function WebGL() {
       
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('mousedown', mousedown);
+      canvas.removeEventListener('mousemove', mousemove);
+      canvas.removeEventListener('mouseup', mouseup);
     }
   }, [house])
 

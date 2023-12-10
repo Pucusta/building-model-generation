@@ -138,8 +138,8 @@ export class House extends Mesh {
     
             } else { //sideLength1 == sideLength2
     
-                let rooftopHeight = Math.tan(Parameters.roofAngle * (Math.PI / 180)) * (ML.getLength3(ML.sub3(eavesCorners[0], topMiddle)));
-                let rooftop: Vec3 = [topMiddle[0], topMiddle[1] + rooftopHeight, topMiddle[2]];
+                //let rooftopHeight = Math.tan(Parameters.roofAngle * (Math.PI / 180)) * (ML.getLength3(ML.sub3(eavesCorners[0], topMiddle)));
+                let rooftop: Vec3 = [topMiddle[0], topMiddle[1] + Parameters.roofHeight, topMiddle[2]];
         
                 for (let i = 0; i < 4; i++) {
                     const positions: Vec3[] = [];
